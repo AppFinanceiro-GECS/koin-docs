@@ -1,4 +1,4 @@
-# Sprint 1
+# Sprint 2
  
 *Período:* 01/09/2026 a 08/09/2026
  
