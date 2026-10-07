@@ -6,7 +6,7 @@
  
 | Trio de Desenvolvedores | Qtd. de US | US | Assunto das US |
 |---|---:|---|---|
-| Julio Dourado / Brenno da Silva Oliveira | x| x | x|
+| Julio Dourado / Brenno da Silva Oliveira | 11 | [Issue #15](https://github.com/AppFinanceiro-GECS/koin-docs/issues/15), [Issue #16](https://github.com/AppFinanceiro-GECS/koin-docs/issues/16), [Issue #17](https://github.com/AppFinanceiro-GECS/koin-docs/issues/17), [koin-api#56](https://github.com/AppFinanceiro-GECS/koin-api/pull/56), [koin-api#62](https://github.com/AppFinanceiro-GECS/koin-api/pull/62), [koin-api#65](https://github.com/AppFinanceiro-GECS/koin-api/pull/65), [koin-api#67](https://github.com/AppFinanceiro-GECS/koin-api/pull/67), [koin-api#68](https://github.com/AppFinanceiro-GECS/koin-api/pull/68), [koin-app#17](https://github.com/AppFinanceiro-GECS/koin-app/pull/17), [koin-app#19](https://github.com/AppFinanceiro-GECS/koin-app/pull/19), [koin-app#21](https://github.com/AppFinanceiro-GECS/koin-app/pull/21) | Divisão dos repositórios, hospedagem na Oracle e CI/CD com deploy automático; homologação contínua do app (EAS Update), SDK 58, correção da leitura de faturas por IA e do upload, atualização de dependências e link do app de homologação |
 | André Ricardo Meyer / Giovanni Dornelas | x | x | x |
 | Pedro Paulo | x | x | x |
 | Rafael | x | x | x |
