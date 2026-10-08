@@ -10,7 +10,7 @@
 | André Ricardo Meyer / Giovanni Dornelas | x | x | x |
 | Pedro Paulo | x | x | x |
 | Rafael | 4 | [Issue #69](https://github.com/AppFinanceiro-GECS/koin-api/issues/69), [koin-api#70](https://github.com/AppFinanceiro-GECS/koin-api/pull/70), [Issue #76](https://github.com/AppFinanceiro-GECS/koin-api/issues/76), [koin-api#78](https://github.com/AppFinanceiro-GECS/koin-api/pull/78) | Entrega de notificações pendentes por e-mail via job agendado no backend (vencimento de fatura, orçamento, etc.), com retentativa automática em caso de falha de envio; correção da logo quebrada e do domínio desatualizado (biveto.com) nos templates de e-mail |
-| Ana Luiza Pfeilsticker, Gabriel Souza / João V. Farias | 3 | [Issue #24](https://github.com/AppFinanceiro-GECS/koin-docs/issues/24), [Issue #23](https://github.com/AppFinanceiro-GECS/koin-docs/issues/23)  | Estruturação inicial do frontend, protótipo de baixa fidelidade e alta fidelidade |
+| Ana Luiza Pfeilsticker, Gabriel Souza / João V. Farias | 3 | [Issue #24](https://github.com/AppFinanceiro-GECS/koin-docs/issues/24), [Issue #23](https://github.com/AppFinanceiro-GECS/koin-docs/issues/23), [Issue #26](https://github.com/AppFinanceiro-GECS/koin-docs/issues/26) | Estruturação inicial do frontend, protótipo de baixa fidelidade e alta fidelidade, implementação de telas inicias de baixa fidelidade |
  
 ---
  
