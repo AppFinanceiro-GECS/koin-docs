@@ -17,6 +17,6 @@
 ## Resumo
  
 - *Líder da Apresentação*: Ana Luiza Pfeilsticker
-- *Total de US concluídas:* x
+- *Total de US concluídas:* 23
 - *Início da Sprint:* 21/09/2026
 - *Fim da Sprint:* 07/10/2026
