@@ -1,7 +1,7 @@
 # Fluxo do produto: o cartão nasce da fatura
 
-*Atualizado em:* 12/11/2026
-*Implementação:* [koin-api#131](https://github.com/AppFinanceiro-GECS/koin-api/pull/131), [koin-app#32](https://github.com/AppFinanceiro-GECS/koin-app/pull/32), [koin-api#132](https://github.com/AppFinanceiro-GECS/koin-api/pull/132) e [koin-app#33](https://github.com/AppFinanceiro-GECS/koin-app/pull/33)
+*Atualizado em:* 12/11/2026 (comprovantes)
+*Implementação:* [koin-api#131](https://github.com/AppFinanceiro-GECS/koin-api/pull/131), [koin-app#32](https://github.com/AppFinanceiro-GECS/koin-app/pull/32), [koin-api#132](https://github.com/AppFinanceiro-GECS/koin-api/pull/132), [koin-app#33](https://github.com/AppFinanceiro-GECS/koin-app/pull/33), [koin-api#133](https://github.com/AppFinanceiro-GECS/koin-api/pull/133) e [koin-app#34](https://github.com/AppFinanceiro-GECS/koin-app/pull/34)
 
 ## Sumário
 
@@ -12,7 +12,8 @@
 5. [Como o cartão é reconhecido](#5-como-o-cartão-é-reconhecido)
 6. [Telas](#6-telas)
 7. [API](#7-api)
-8. [Próximos passos](#8-próximos-passos)
+8. [Comprovantes e o cartão](#8-comprovantes-e-o-cartão)
+9. [Próximos passos](#9-próximos-passos)
 
 ---
 
@@ -73,9 +74,9 @@ Regra principal: **o cartão é um cadastro só, e só a fatura cria cartão aut
 | Documento | O que tem nele | O que o app faz |
 |---|---|---|
 | **Fatura do cartão** | banco, final, fechamento, vencimento, limite, compras | Reconhece o cartão cadastrado ou oferece cadastrar com os dados lidos |
-| **Comprovante de compra no cartão** (via da maquininha, e-mail da loja) | valor, data, às vezes final e bandeira | Não cria cartão. Hoje vira despesa de uma conta; a ligação pelo final está nos próximos passos |
+| **Comprovante de compra no cartão** (via da maquininha, e-mail da loja) | valor, data, às vezes final e bandeira | Não cria cartão. Se um cartão tem o mesmo final, a compra entra na fatura dele. Se nenhum tem, a despesa entra numa conta comum e o app pergunta "Cadastrar o cartão final 1234?" |
 | **Comprovante de PIX ou boleto** | valor, data, destinatário | Despesa da conta. Não é cartão |
-| **Comprovante de pagamento da fatura** | banco, valor pago | Não cria cartão. Ligar à fatura aberta está nos próximos passos |
+| **Comprovante de pagamento da fatura** | banco do cartão, valor pago, às vezes o final | Não cria cartão. O app acha a fatura em aberto do cartão (pelo banco e pelo valor) e oferece "Marcar fatura do Nubank como paga", com a conta de onde saiu o dinheiro |
 | **Cupom fiscal / nota** | itens, total, forma de pagamento | Despesa da conta, com itens |
 
 ## 5. Como o cartão é reconhecido
@@ -97,6 +98,7 @@ O cadastro pela fatura é idempotente: enviar a mesma fatura duas vezes não cri
 | Tutorial (`/onboarding`) | 4 passos com ilustrações feitas com os componentes do app. Abre no primeiro acesso de cada usuário no aparelho e pode ser revisto em *Mais* |
 | Início | Sem cartão: convite "Comece pela sua fatura". Com cartão: *Próximas faturas*, *Já comprometido* (gráfico de 6 meses), alertas e resumo do mês |
 | Importar fatura | Cartão opcional no envio ("Descobrir pela fatura"); o mês da fatura vem da própria fatura, sem lista de meses fixos. Na revisão, um aviso mostra o cartão reconhecido, oferece cadastrar o cartão novo (um toque ou "Ajustar") ou pede para escolher. As compras entram na conta do cartão, com mês da fatura, e os erros aparecem para a pessoa |
+| Revisar comprovante | Compra com final: aviso do cartão reconhecido ("entra na fatura") ou "Cadastrar o cartão final 1234?". Pagamento de fatura: tela *Pagamento de fatura* com a fatura sugerida, a conta de origem e "Marcar fatura do X como paga" (seção 8) |
 | Cartões | Sem cartão: "Enviar fatura" primeiro e "Cadastrar na mão" como alternativa. Editar, desativar e excluir conforme [koin-app#32](https://github.com/AppFinanceiro-GECS/koin-app/pull/32) |
 | Formulário do cartão | Aceita dados pré-preenchidos (vindos da fatura) para ajustar antes de salvar |
 
@@ -104,7 +106,8 @@ O cadastro pela fatura é idempotente: enviar a mesma fatura duas vezes não cri
 
 | Rota | Uso |
 |---|---|
-| `GET /documents/{id}` | Ganha `card_match`: `matched` (com `credit_card_id`), `new` (com `suggestion`), `ambiguous` (com `candidate_ids`) ou `none` |
+| `GET /documents/{id}` | Ganha `card_match`: `matched` (com `credit_card_id`), `new` (com `suggestion`), `ambiguous` (com `candidate_ids`), `unregistered` (comprovante com final de cartão não cadastrado, com `suggestion`) ou `none`. Comprovantes trazem `payment_card` (final, bandeira, banco) e o de pagamento de fatura traz `invoice_payment` (seção 8) |
+| `POST /invoices/{id}/pay` | Já existia. O app usa para marcar a fatura como paga a partir do comprovante, com `amount`, `payment_account_id` e `payment_date` |
 | `POST /credit-cards/from-document/{document_id}` | Cadastra o cartão a partir da fatura lida. 201 ao criar, 200 se já existe um que bate, 422 `not_an_invoice` para outros documentos |
 | `GET /invoices/outlook?months=6&scope=me\|family` | Parcelas já compradas por mês de fatura nos próximos N meses |
 | `POST /transactions/batch-confirm` | Já aceitava `credit_card_id`, `invoice_month/year` e `card_closing_day/card_due_day`. Agora o app envia esses campos |
@@ -112,12 +115,54 @@ O cadastro pela fatura é idempotente: enviar a mesma fatura duas vezes não cri
 
 `POST /invoices/detect-card` e `POST /invoices/create-card-from-invoice` ficam marcados como obsoletos: nenhuma tela usa e eles confiam em dados enviados pelo app.
 
-## 8. Próximos passos
+## 8. Comprovantes e o cartão
+
+A regra continua: **só a fatura cria cartão.** Comprovantes apontam para um cartão que já existe ou sugerem cadastrar; quem decide é sempre a pessoa.
+
+```mermaid
+flowchart TD
+    A[Comprovante lido] --> B{Que comprovante?}
+    B -- pagamento de fatura --> C{Fatura em aberto do cartão?}
+    C -- uma bate pelo banco e valor --> D[Marcar fatura do X como paga + conta de origem]
+    C -- mais de uma --> E[Escolher a fatura]
+    E --> D
+    C -- já paga --> F[Avisa: esta fatura já está paga]
+    C -- nenhuma --> G[Enviar a fatura ou lançar como despesa comum]
+    B -- compra com final --> H{Cartão com esse final?}
+    H -- sim --> I[Compra entra na fatura do cartão]
+    H -- mais de um --> J[Escolher o cartão]
+    J --> I
+    H -- não --> K[Despesa numa conta comum + Cadastrar o cartão final 1234?]
+    K -- cadastrou antes de confirmar --> I
+    B -- compra sem final, Pix, boleto --> L[Despesa numa conta comum]
+```
+
+### 8.1 Comprovante de pagamento da fatura → fatura paga
+
+A IA classifica o documento como `comprovante_fatura` (pagamento de fatura de cartão, feito pelo app do banco, Pix ou boleto da fatura) e lê o banco **do cartão**, não o banco de onde saiu o dinheiro. A API procura a fatura assim:
+
+1. **Pelo banco** (e pelo final, quando aparece) acha o cartão. Se o comprovante cita um banco que não tem cartão cadastrado, não sugere fatura de outro banco.
+2. **Pelo valor**: a fatura não paga cujo total, ou o que falta pagar, é igual ao valor pago.
+3. Valor diferente no cartão certo (pagamento parcial): sugere a fatura que vence mais perto da data do pagamento e avisa que ela fica parcialmente paga.
+4. Sem banco no comprovante: casa só pelo valor; se nenhum valor fecha, a pessoa escolhe entre as faturas em aberto.
+5. O mesmo comprovante de novo: avisa que a fatura já está paga.
+
+O app mostra a fatura sugerida, pede a conta de origem (só contas que não são cartão) e registra o pagamento com `POST /invoices/{id}/pay`. Como o pagamento não é uma despesa nova, ele não entra como compra; se a pessoa preferir, "Lançar como despesa comum" continua disponível.
+
+### 8.2 Comprovante de compra com final → cartão
+
+A IA guarda o final, a bandeira e, se aparecer, o banco do cartão (`payment_card`) em comprovantes, cupons e notas. O reconhecimento é o mesmo da fatura (seção 5), mas **só pelo final**: sem os 4 dígitos, a compra fica numa conta comum.
+
+| Resultado | O que o app faz |
+|---|---|
+| Um cartão tem o final | "Compra no cartão · entra na fatura". A compra vai para a conta do cartão, com `credit_card_id`, e a API calcula a fatura pela data e pelo fechamento. "Não foi nele" volta para a conta comum |
+| Mais de um cartão tem o final | Pede para escolher |
+| Nenhum cartão tem o final | "Cadastrar o cartão final 1234?" abre o formulário do cartão com nome, final e bandeira. Se a pessoa cadastra antes de confirmar, a compra já vai para o cartão novo; se não, entra na conta comum e a pergunta aparece de novo no fim |
+
+## 9. Próximos passos
 
 Em ordem de valor para o público:
 
-1. **Comprovante de pagamento da fatura → marcar a fatura como paga.** O documento já é classificado; falta ligar o pagamento à fatura aberta do cartão (pelo banco e pelo valor).
-2. **Comprovante de compra com final → lançar no cartão.** Reaproveitar o reconhecimento pelo final em documentos que não são fatura; sem cartão cadastrado, a despesa entra e o app pergunta "Cadastrar o cartão final 1234?".
-3. **Encaminhar a fatura por e-mail.** Quase todo banco manda o PDF por e-mail. Um endereço do Koin que recebe e importa sozinho resolve o ritual mensal sem Open Finance.
-4. **Aviso de fatura fechada** ("Sua fatura do Nubank fechou, mande o PDF"), usando a data de fechamento que veio da própria fatura.
-5. **Open Finance:** avaliar depois de medir retenção. Exige ser instituição autorizada pelo Banco Central ou contratar um agregador, além de CNPJ, custo por conexão e mais responsabilidade de LGPD.
+1. **Encaminhar a fatura por e-mail.** Quase todo banco manda o PDF por e-mail. Um endereço do Koin que recebe e importa sozinho resolve o ritual mensal sem Open Finance.
+2. **Aviso de fatura fechada** ("Sua fatura do Nubank fechou, mande o PDF"), usando a data de fechamento que veio da própria fatura.
+3. **Open Finance:** avaliar depois de medir retenção. Exige ser instituição autorizada pelo Banco Central ou contratar um agregador, além de CNPJ, custo por conexão e mais responsabilidade de LGPD.
