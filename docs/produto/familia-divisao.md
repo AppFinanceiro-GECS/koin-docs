@@ -1,7 +1,7 @@
 # Fluxo do produto: família, quem pagou o quê e o acerto
 
 *Atualizado em:* 12/11/2026
-*Implementação:* [koin-api#134](https://github.com/AppFinanceiro-GECS/koin-api/pull/134) e [koin-app#35](https://github.com/AppFinanceiro-GECS/koin-app/pull/35)
+*Implementação:* [koin-api#134](https://github.com/AppFinanceiro-GECS/koin-api/pull/134) e [koin-app#35](https://github.com/AppFinanceiro-GECS/koin-app/pull/35); cartão da casa em [koin-api#136](https://github.com/AppFinanceiro-GECS/koin-api/pull/136) e [koin-app#37](https://github.com/AppFinanceiro-GECS/koin-app/pull/37)
 *Relacionado:* [O cartão nasce da fatura](fluxo-cartao-pela-fatura.md)
 
 ## Sumário
@@ -11,9 +11,10 @@
 3. [O fluxo](#3-o-fluxo)
 4. [Como a divisão é calculada](#4-como-a-divisão-é-calculada)
 5. [Entrar na família já tendo conta](#5-entrar-na-família-já-tendo-conta)
-6. [Telas](#6-telas)
-7. [API](#7-api)
-8. [Próximos passos](#8-próximos-passos)
+6. [Cartão da casa](#6-cartão-da-casa)
+7. [Telas](#7-telas)
+8. [API](#8-api)
+9. [Próximos passos](#9-próximos-passos)
 
 ---
 
@@ -70,16 +71,30 @@ Exemplo: despesas da casa de R$ 400 (Ana pagou R$ 300, Bruno R$ 100). Partes igu
 - Regras: o convite tem que ter sido feito **para o e-mail da conta** (um código vazado não serve para outra pessoa); convite usado, cancelado ou expirado não entra; quem está **sozinho** numa família própria sai dela ao entrar; quem **divide** outra família precisa sair antes.
 - Os lançamentos pessoais continuam pessoais. A família vê só o que for marcado como da casa.
 
-## 6. Telas
+## 6. Cartão da casa
+
+Num casal, é comum um cartão pagar quase tudo da casa (mercado, contas, farmácia). Marcar compra por compra não escala: o cartão inteiro vira **da casa**.
+
+- **Onde:** na revisão da fatura (logo abaixo do cartão reconhecido) e em *Editar cartão*. Só aparece para quem divide a família com alguém.
+- **Quem muda:** só quem cadastrou o cartão, porque é quem paga a fatura. Os outros membros veem *Cartão da casa de Fulano*.
+- **O que acontece:**
+  - as compras das faturas **ainda não pagas** passam a ser da casa e entram na divisão; faturas pagas ficam como estavam;
+  - tudo o que for importado depois nesse cartão entra como da casa, mesmo sem marcar;
+  - a família passa a ver o cartão e as faturas dele.
+- **Quem pagou:** continua sendo o dono do cartão. Ex.: Ana marca o Visa como da casa; a fatura aberta tem R$ 200 de mercado; com partes iguais, *Bruno paga R$ 100 para Ana*.
+- **Voltar a pessoal:** as compras das faturas não pagas saem da divisão. Uma compra só sua no cartão da casa pode ser editada depois e marcada como pessoal.
+
+## 7. Telas
 
 | Tela | O que tem |
 |---|---|
 | Família (`/family`) | Membros, navegação por mês, cartão da divisão (total, quem pagou, partes, saldo, *Você paga R$ X para Fulano* com **Acertar**, acertos com **Desfazer**) e a lista de despesas da casa com *pago por Fulano*. Sozinho: atalho para entrar com código |
 | Sem família | *Criar grupo familiar* e *Tenho um código de convite* |
 | Entrar numa família (`/family/join`) | Campo do código e o lembrete de privacidade |
+| Revisão da fatura e Editar cartão | Chave *Cartão da casa*, com confirmação explicando o que muda |
 | Como dividir (`/family/shares`) | Partes iguais ou proporcional (50/50, 60/40, 70/30, *Calcular pela renda*). Só o dono salva; os outros podem simular |
 
-## 7. API
+## 8. API
 
 | Rota | Uso |
 |---|---|
@@ -90,12 +105,14 @@ Exemplo: despesas da casa de R$ 400 (Ana pagou R$ 300, Bruno R$ 100). Partes igu
 | `POST /family/join` | Entrar com o código, já tendo conta |
 | `POST /family/invite` | Passa a aceitar e-mail já cadastrado |
 | `GET /transactions` | Passa a trazer `user_id` (quem lançou) |
+| `PATCH /credit-cards/{id}` | `ownership_type` (`personal`/`household`) e `apply_to_open_invoices`. Só o dono do cartão; virar da casa exige família |
+| `POST /transactions/batch-confirm` | Lançamento numa conta ou cartão da casa entra como da família |
 
 Tabelas: `household_settlements` e a coluna `household_members.share_percent` (migração `add_household_settlements`).
 
-## 8. Próximos passos
+## 9. Próximos passos
 
-1. **Marcar o cartão como da casa** na importação da fatura, para todas as compras entrarem na divisão sem marcar uma a uma.
+1. ~~**Marcar o cartão como da casa**~~: feito (seção 6).
 2. **Aviso de acerto** no fim do mês ("Você e Paula fecharam novembro: você paga R$ 120").
 3. **Divisão por despesa** (uma compra só de um, outra 50/50) para quem quer mais controle.
 4. **Pix copia e cola** a partir da chave do outro membro, sem o Koin movimentar dinheiro.
