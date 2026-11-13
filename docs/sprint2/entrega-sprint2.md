@@ -1,6 +1,6 @@
 # Sprint 2
  
-*Período:* 01/09/2026 a 08/09/2026
+*Período:* 21/09/2026 a 07/10/2026
  
 ## Entregas da Sprint
  
