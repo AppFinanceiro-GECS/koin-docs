@@ -11,7 +11,7 @@
 | André Ricardo Meyer / Giovanni Dornelas | | | *A preencher pelo grupo* |
 | Pedro Paulo | | | *A preencher pelo grupo* |
 | Rafael | | | *A preencher pelo grupo* |
-| Ana Luiza Pfeilsticker, Gabriel Souza / João V. Farias | | | *A preencher pelo grupo* |
+| Ana Luiza Pfeilsticker, Gabriel Souza / João V. Farias | 2 | [Issue #41](https://github.com/AppFinanceiro-GECS/koin-app/issues/41), [Issue #42](https://github.com/AppFinanceiro-GECS/koin-app/issues/42) | Apresentação e validação da interface (UI), experiência do usuário (UX) e fluxos de navegação junto ao cliente. O objetivo foi alinhar expectativas, verificar a aderência das telas às regras de negócio e coletar feedbacks estruturados para pequenos ajustes |
 
 Detalhes das entregas do Grupo 1 em [entregaveis/grupo1-sprint4.md](entregaveis/grupo1-sprint4.md).
 
