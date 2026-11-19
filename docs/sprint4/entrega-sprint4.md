@@ -11,7 +11,7 @@
 | André Ricardo Meyer / Giovanni Dornelas | | | *A preencher pelo grupo* |
 | Pedro Paulo | | | *A preencher pelo grupo* |
 | Rafael | | | *A preencher pelo grupo* |
-| Ana Luiza Pfeilsticker, Gabriel Souza / João V. Farias | 2 | [Issue #41](https://github.com/AppFinanceiro-GECS/koin-app/issues/41), [Issue #42](https://github.com/AppFinanceiro-GECS/koin-app/issues/42) | Apresentação e validação da interface (UI), experiência do usuário (UX) e fluxos de navegação junto ao cliente. O objetivo foi alinhar expectativas, verificar a aderência das telas às regras de negócio e coletar feedbacks estruturados para pequenos ajustes |
+| Ana Luiza Pfeilsticker, Gabriel Souza / João V. Farias | 6 | [Issue #41](https://github.com/AppFinanceiro-GECS/koin-app/issues/41), [Issue #42](https://github.com/AppFinanceiro-GECS/koin-app/issues/42), [Issue #43](https://github.com/AppFinanceiro-GECS/koin-app/issues/43), [Issue #44](https://github.com/AppFinanceiro-GECS/koin-app/issues/44), [Issue #45](https://github.com/AppFinanceiro-GECS/koin-app/issues/45), [Issue #46](https://github.com/AppFinanceiro-GECS/koin-app/issues/46) | Apresentação e validação da interface (UI), experiência do usuário (UX) e fluxos de navegação junto ao cliente; integração completa das telas à API real com remoção de mocks, tema escuro unificado, atualização do Expo e testes E2E; correções no upload via FormData no Android, cancelamento/reprocessamento e revisão dinâmica de faturas com suporte a senha de PDF; central de notificações com badge no menu Mais e roteamento direto; fluxo zero-state de família, compartilhamento condicional e convite direto por código |
 
 Detalhes das entregas do Grupo 1 em [entregaveis/grupo1-sprint4.md](entregaveis/grupo1-sprint4.md).
 
